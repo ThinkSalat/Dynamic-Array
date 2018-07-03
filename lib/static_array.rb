@@ -6,20 +6,12 @@ class StaticArray
 
   # O(1)
   def [](index)
-    if @arr[index]
-      @arr[index]
-    else
-      nil
-    end
+    @arr[index]
   end
 
   # O(1)
   def []=(index, value)
-    if @arr[index]
-      @arr[index] = value
-    else
-      nil
-    end
+    @arr[index] = value
   end
 
   protected

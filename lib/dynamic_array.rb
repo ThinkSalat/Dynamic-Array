@@ -32,35 +32,34 @@ class DynamicArray
   # resize.
   def push(val)
     resize! if capacity == length
-    @length +=1 
     @arr[length] = val
+    @length +=1 
   end
 
   # O(n): has to shift over all the elements.
   def shift
     empty?
-    i = 0
     result = @arr[0]
-    while i < length
+
+    (@length - 1).times do |i|
       @arr[i] = @arr[i+1]
-      i+= 1
     end
-    @arr[length-1] = nil
+    
     @length -= 1
     result
   end
 
   # O(n): has to shift over all the elements.
   def unshift(val)
-    resize! if capacity == (length - 1)
-    
-    i = length
-    while i > 0
-      @arr[i+1] = @arr[i]
-      i -= 1
+    resize! if @capacity == @length
+    temp = StaticArray.new(@capacity)
+
+    @length.times do |i|
+      temp[i+1] = @arr[i]
     end
-    @length +=1
-    @arr[0] = val
+    @length += 1
+    temp[0] = val
+    @arr = temp
   end
 
   protected
@@ -79,10 +78,8 @@ class DynamicArray
   def resize!
     @capacity *= 2
     new_arr = StaticArray.new(capacity)
-    i = 0
-    while i < length 
+    length.times do |i|
       new_arr[i] = @arr[i]
-      i += 1
     end
     @arr = new_arr
   end
