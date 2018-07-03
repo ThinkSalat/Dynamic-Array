@@ -1,72 +1,65 @@
 require_relative "static_array"
 
 class DynamicArray
-  attr_reader :length
+  attr_reader :length, :capacity
 
   def initialize
-    @arr = StaticArray.new(4)
-  end
-
-  def length
-    length = 0
-    i = 0
-    while true
-      break unless @arr[i]
-      length += 1
-      i+= 1
-    end
-    length
+    @capacity = 8
+    @length = 0
+    @arr = StaticArray.new(@capacity)
   end
 
   # O(1)
   def [](index)
-    # raise Exception,.new("index out of bounds") unless length > index
-    raise Exception,  "index out of bounds" unless length > index
+    check_index(index)
     @arr[index]
   end
 
   # O(1)
   def []=(index, value)
-    # raise Exception,.new("index out of bounds") unless length > index
-    raise Exception "index out of bounds" unless length > index
+    check_index(index)
     @arr[index] = value
   end
 
   # O(1)
   def pop
-    raise Exception, "index out of bounds" if length == 0
-    result = @arr[length-1]
-    @arr[length-1] = nil
-    result
+    empty?
+    result = @arr[length]
+    @length -= 1 
   end
 
   # O(1) ammortized; O(n) worst case. Variable because of the possible
   # resize.
   def push(val)
-    resize! unless @arr[length-1]
+    resize! if capacity == length
+    @length +=1 
     @arr[length] = val
   end
 
   # O(n): has to shift over all the elements.
   def shift
-    raise Exception, "index out of bounds"  if length == 0
+    empty?
     i = 0
     result = @arr[0]
-    while (i < length - 1)
+    while i < length
       @arr[i] = @arr[i+1]
+      i+= 1
     end
     @arr[length-1] = nil
+    @length -= 1
     result
   end
 
   # O(n): has to shift over all the elements.
   def unshift(val)
-    resize! unless @arr[length-1]
+    resize! if capacity == (length - 1)
     
     i = length
     while i > 0
       @arr[i+1] = @arr[i]
+      i -= 1
     end
+    @length +=1
     @arr[0] = val
   end
 
@@ -74,18 +67,23 @@ class DynamicArray
   attr_accessor :capacity, :store
   attr_writer :length
 
-  def check_index(index)
+  def empty?
+    raise 'index out of bounds' if @length == 0
+  end
 
+  def check_index(index)
+    raise "index out of bounds" if index > length - 1
   end
 
   # O(n): has to copy over all the elements to the new store.
   def resize!
-    new_arr = StaticArray.new(length*2)
+    @capacity *= 2
+    new_arr = StaticArray.new(capacity)
     i = 0
     while i < length 
       new_arr[i] = @arr[i]
       i += 1
     end
-    return new_arr
+    @arr = new_arr
   end
 end
