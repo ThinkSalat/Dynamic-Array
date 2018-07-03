@@ -28,7 +28,7 @@ class DynamicArray
   # O(1)
   def []=(index, value)
     # raise Exception,.new("index out of bounds") unless length > index
-    raise Expection "index out of bounds" unless length > index
+    raise Exception "index out of bounds" unless length > index
     @arr[index] = value
   end
 
@@ -43,17 +43,31 @@ class DynamicArray
   # O(1) ammortized; O(n) worst case. Variable because of the possible
   # resize.
   def push(val)
-    resize! if @arr[length-1]
+    resize! unless @arr[length-1]
     @arr[length] = val
   end
 
   # O(n): has to shift over all the elements.
   def shift
-    raise Exception, "index out of bounds" 
+    raise Exception, "index out of bounds"  if length == 0
+    i = 0
+    result = @arr[0]
+    while (i < length - 1)
+      @arr[i] = @arr[i+1]
+    end
+    @arr[length-1] = nil
+    result
   end
 
   # O(n): has to shift over all the elements.
   def unshift(val)
+    resize! unless @arr[length-1]
+    
+    i = length
+    while i > 0
+      @arr[i+1] = @arr[i]
+    end
+    @arr[0] = val
   end
 
   protected
@@ -61,6 +75,7 @@ class DynamicArray
   attr_writer :length
 
   def check_index(index)
+
   end
 
   # O(n): has to copy over all the elements to the new store.
